@@ -4,16 +4,17 @@ Il frontend fornisce un'interfaccia WEB user-friendly per l'utilizzo delle API i
 
 
 ## Guida per l'installazione
-### Step 1: Predisporre un web server con sopra installato l'interprete PHP (Ë sufficiente installare il pacchetto XAMPP)
+### Step 1: Predisporre un web server con sopra installato l'interprete PHP
+A tale scopo √® sufficiente installare il pacchetto XAMPP
 
 ### Step 2: Clonare il repository corrente nella root del server
-user@localhost:\~$ cd /var/www/html
+user@localhost:\~$ cd /var/www/html\
 user@localhost:\~/var/www/html/$ git clone https://github.com/Dark2C/swbd-FE .
 
 ### Step 3: Modifica il file config.php con le impostazioni della tua configurazione
-Ti sar‡ richiesto di indicare l'indirizzo del server REST e una chiave API per l'utilizzo dei servizi di Google Maps.
+Ti sar√† richiesto di indicare l'indirizzo del server REST e una chiave API per l'utilizzo dei servizi di Google Maps.\
 Per quest'ultima, visita https://developers.google.com/maps/documentation/javascript/get-api-key per maggiori informazioni.
 
-### Il frontend sar‡ accessibile con le credenziali di default (admin:admin)
+### Il frontend sar√† accessibile con le credenziali di default (admin:admin)
 
 Enjoy!
