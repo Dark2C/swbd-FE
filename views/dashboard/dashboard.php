@@ -53,7 +53,7 @@ function getStatisticheImpianti(ID_sensore,measureUnit)
 								risultato += impianto.datiSensore.integrale;
 								measureUnit = impianto.datiSensore.unita_misura_integrale;
 								});
-								$("#statisticheImpianti").html(risultato + ' [' + measureUnit + ']');
+								$("#statisticheImpianti").html(risultato.toFixed(2) + ' [' + measureUnit + ']');
 				        	},
 				        	xhrFields: {
 				        	    withCredentials: true
@@ -126,7 +126,7 @@ function fillSensore() {
             for (const sensore in data) {
                 sensori.push(`<option value="${data[sensore].ID_tipologia_sensore}">${data[sensore].produttore} - ${data[sensore].modello} (${data[sensore].descrizione})</option>`);
             }
-            $("#elencoTipologiaSensori").html(sensori.join(''));
+            $("#elencoTipologiaSensori").html(`<option selected disabled>Seleziona un sensore dall'elenco...</option>` + sensori.join(''));
         },
         xhrFields: {
             withCredentials: true
