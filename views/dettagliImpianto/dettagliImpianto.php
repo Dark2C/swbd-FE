@@ -224,22 +224,38 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<h4 class="modal-title">Elenco operazioni attuatore</h4>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-				 	<span aria-hidden="true">&times;</span>
+				<button type="button" class="close" aria-label="Add" title="Aggiungi operazione" onclick="showAddOperazioneForm();">
+				 	<span aria-hidden="true">+</span>
+				</button>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-left: 0;">
+				 	<span aria-hidden="true">×</span>
 				</button>
 			</div>
 			<div class="modal-body">
-				<table class="table table-striped table-valign-middle">
-					<thead>
-						<tr>
-							<th>Data operazione</th>
-							<th>Valore</th>
-							<th>Conferma lettura</th>
-						</tr>
-					</thead>
-					<tbody id="elencoOperazioniAttuatore">
-					</tbody>
-				</table>
+				<div class="addOperazioneForm" style="display: none;">
+					<input type="hidden" class="currentAttuatoreID">
+					<div class="form-group">
+						<label for="valoreOperazione">Indica il valore da inviare all'attuatore</label>
+						<input type="number" min="0" max="100" step="0.5" class="form-control" id="valoreOperazione">
+					</div>
+					
+					<div style="text-align: right; margin-top: 20px;">
+						<input type="button" value="Annulla" class="btn btn-default" onclick="hideAddOperazioneForm();">&nbsp;<input type="button" value="Salva" class="btn btn-primary" onclick="addNewOperazione();">
+					</div>
+				</div>
+				<div class="operazioniTable">
+					<table class="table table-striped table-valign-middle">
+						<thead>
+							<tr>
+								<th>Data operazione</th>
+								<th>Valore</th>
+								<th>Conferma lettura</th>
+							</tr>
+						</thead>
+						<tbody id="elencoOperazioniAttuatore">
+						</tbody>
+					</table>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -279,6 +295,15 @@
 						$(".addAnomalia,.anomalieTable").hide();
 						$(".addAnomaliaForm").show();
 					}
+					function hideAddOperazioneForm() {
+						$(".operazioniTable").show();
+						$(".addOperazioneForm").hide();
+					}
+					function showAddOperazioneForm() {
+						$(".operazioniTable").hide();
+						$(".addOperazioneForm").show();
+					}
+					
 					function addNewAnomalia() {
 						$.ajax(`<?php echo $restEntrypoint; ?>/intervento/${$('.currentInterventoID').val()}/anomalia`, {
 				    	    type: "POST",
@@ -286,6 +311,26 @@
 				    	    data: JSON.stringify({
 				    	        descrizione: $(".descrizioneNuovaAnomalia").val(),
 								sensore: $("#elencoSensoriImpiantoAnom").val()
+				    	    }),
+				    	    success: function(data) {
+				    	        location.reload();
+				    	    },
+				    	    error: function () {
+				    	        location.reload();
+				    	    },
+				    	    xhrFields: {
+				    	        withCredentials: true
+				    	    },
+				    	    crossDomain: true
+				    	});
+					}
+
+					function addNewOperazione() {
+						$.ajax(`<?php echo $restEntrypoint; ?>/attuatore/${$('.currentAttuatoreID').val()}/set`, {
+				    	    type: "POST",
+				    	    contentType: "application/json; charset=utf-8",
+				    	    data: JSON.stringify({
+				    	        valore: $("#valoreOperazione").val()
 				    	    }),
 				    	    success: function(data) {
 				    	        location.reload();
@@ -645,7 +690,7 @@ function getAttuatori() {
 	<td>${attuatore.produttore} - ${attuatore.modello}</td>
     <td>${new Date(attuatore.data_installazione).toLocaleString()}</td>
 	<td style="width: 85px; text-align: center;">
-		<button type="button" style="display: inline;" title="Mostra letture dell'attuatore" data-toggle="modal" data-target="#modal-operazioni-attuatore" onclick="getOperazioniAttuatore(${attuatore.ID_attuatore_impianto}, '${attuatore.unita_misura}', ${attuatore.valore_min}, ${attuatore.valore_max});" class="btn btn-xs btn-primary">
+		<button type="button" style="display: inline;" title="Mostra letture dell'attuatore" data-toggle="modal" data-target="#modal-operazioni-attuatore" onclick="getOperazioniAttuatore(${attuatore.ID_attuatore_impianto}, '${attuatore.unita_misura}', ${attuatore.valore_min}, ${attuatore.valore_max}, '${attuatore.tipo_valore}');" class="btn btn-xs btn-primary">
 			<i class="fas fa-list"></i>
 		</button>
 		<?php if($_SESSION['userInfo']['role'] == 'amministratore') { ?>
@@ -665,7 +710,10 @@ function getAttuatori() {
         crossDomain: true
     });
 }
-function getOperazioniAttuatore(idAttuatore, measureUnit, min, max) {
+function getOperazioniAttuatore(idAttuatore, measureUnit, min, max, type) {
+	hideAddOperazioneForm();
+	$(".currentAttuatoreID").val(idAttuatore);
+	$("#valoreOperazione").attr("min", min).attr("max", max).attr("step", (type == 'int') ? 1 : 0.01);
 	$("#unita_misura_operazioniAttuatore").html(measureUnit);
 	$.ajax(`<?php echo $restEntrypoint; ?>/attuatore/${idAttuatore}`, {
         type: "POST",
